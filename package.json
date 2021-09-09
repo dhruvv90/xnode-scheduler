@@ -1,0 +1,24 @@
+{
+  "name": "node-job-scheduler",
+  "version": "1.0.0",
+  "description": "Simple In-memory job scheduler for Node.js",
+  "main": "index.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.4.2"
+  },
+  "scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "eslint . --ext .ts"
+	},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhruvv90/node-job-scheduler.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dhruvv90/node-job-scheduler/issues"
+  },
+  "homepage": "https://github.com/dhruvv90/node-job-scheduler#readme"
+}
