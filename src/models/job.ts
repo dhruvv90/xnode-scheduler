@@ -1,4 +1,5 @@
 import { Task } from "./task";
+import { uuid } from 'uuidv4';
 
 export enum JobStatus {
     NOT_STARTED,
@@ -33,13 +34,15 @@ const getMilliseconds = (options: SchedulerOptions): number => {
 
 export class Job {
 
-    private id: number;
-    private readonly task: Task;
+    public readonly id: string;
+    private timerId: NodeJS.Timer;
     private status: JobStatus;
+    private readonly task: Task;
     private readonly schedulerOptions: SchedulerOptions;
 
     constructor(task: Task, schedulerOptions: SchedulerOptions) {
         this.task = task;
+        this.id = uuid();
         this.schedulerOptions = schedulerOptions;
         this.status = JobStatus.NOT_STARTED;
     }
@@ -49,22 +52,22 @@ export class Job {
      *  */
     start(): void {
         // already running
-        this.id ? this.stop() : null;
+        this.timerId ? this.stop() : null;
 
-        if(this.schedulerOptions.runAtStart){
+        if (this.schedulerOptions.runAtStart) {
             this.task.handle();
         }
-        this.id = setInterval(this.task.handle, getMilliseconds(this.schedulerOptions));
+        this.timerId = setInterval(this.task.handle, getMilliseconds(this.schedulerOptions));
         this.status = JobStatus.RUNNING;
     }
 
     stop(): void {
-        if(!this.id){
+        if (!this.timerId) {
             return;
         }
-        clearInterval(this.id);
+        clearInterval(this.timerId);
         this.status = JobStatus.STOPPED;
-        this.id = undefined;
+        this.timerId = undefined;
     }
 
     getStatus(): JobStatus {
