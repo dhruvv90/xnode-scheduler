@@ -2,9 +2,9 @@ import { Task } from "./task";
 import { v4 } from 'uuid';
 
 export enum JobStatus {
-    NOT_STARTED,
-    RUNNING,
-    STOPPED
+    NOT_STARTED = 'NOT_STARTED',
+    RUNNING = 'RUNNING',
+    STOPPED = 'STOPPED'
 };
 
 type SchedulerOptions = {

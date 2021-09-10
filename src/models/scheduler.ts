@@ -50,18 +50,19 @@ export class Scheduler {
     }
 
     status(): object {
-        const jobList = Object.keys(this.jobs);
-        const summary = {
-            totalJobs: jobList.length,
-        };
+        const activeJobs = [], idleJobs = [];
+        Object.entries(this.jobs).forEach(([id, job]) => {
+            job.getStatus() === JobStatus.RUNNING
+                ? activeJobs.push(job)
+                : idleJobs.push(job)
+        });
 
-        const details = {};
-        const activeJobs = 0, IdleJobs = 0;
-        jobList.map((id) => {
-            const job = this.jobs[id];
-            details[id] = job.getStatus();
-        })
-        return summary;
+        return {
+            totalJobs: Object.keys(this.jobs).length,
+            activeJobs,
+            idleJobs,
+        }
+
     }
 
 }
