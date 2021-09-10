@@ -1,5 +1,3 @@
-import * as x from './example';
-x;
-
+export * from './src/models';
 
 

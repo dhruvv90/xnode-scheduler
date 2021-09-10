@@ -1,6 +1,4 @@
-import { Job, JobStatus } from "./src/models/job";
-import { Scheduler } from "./src/models/scheduler";
-import { SyncTask } from "./src/models/task";
+import { Job, JobStatus, Scheduler, SyncTask, AsyncTask } from './index';
 
 
 const everySecond = () => {
@@ -25,14 +23,16 @@ scheduler.addJob(job2);
 setInterval(() => {
     console.log('Scheduler status');
     console.log(scheduler.status());
+    console.log(job.getStatus())
+    console.log(job2.getStatus())
 }, 6000);
 
-setTimeout(()=>{
+setTimeout(() => {
     job2.stop();
 }, 18000);
 
 
-setTimeout(()=>{
+setTimeout(() => {
     scheduler.stop();
     process.exit()
 }, 25000)
