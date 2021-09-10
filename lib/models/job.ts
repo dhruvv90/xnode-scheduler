@@ -2,6 +2,8 @@ import { AsyncTask, SyncTask, Task } from "./task";
 import { v4 } from 'uuid';
 import { AsyncFn, SyncFn } from "../utils";
 
+const MAX_DELAY = 2147483647;
+
 export enum JobStatus {
     NOT_STARTED = 'NOT_STARTED',
     RUNNING = 'RUNNING',
@@ -68,7 +70,11 @@ export class Job {
 
         this.id = id;
         this.runAtStart = runAtStart;
+
         this.timerDuration = getMilliseconds(schedulerOptions);
+        if(this.timerDuration >= MAX_DELAY ){
+            throw new Error(`Error in creating Job : "${this.id}". Time delays greater than or equal to 2147483647 are not supported yet`);
+        }
 
         this.status = JobStatus.NOT_STARTED;
     }

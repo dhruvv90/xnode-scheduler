@@ -11,8 +11,8 @@ const every3Seconds = () => {
 
 const scheduler = new Scheduler();
 
-const job1 = new Job(everySecond, { seconds: 1 }, { id: 'job1' });
-const job2 = new Job(every3Seconds, { seconds: 3 });
+const job1 = new Job(everySecond, { seconds: -1 }, { id: 'job1' });
+const job2 = new Job(every3Seconds, { seconds: 2147483647 }, {id: 'testtttt'});
 
 
 scheduler.addJob(job1);
