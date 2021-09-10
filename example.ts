@@ -14,6 +14,7 @@ const job = new Job(task, {seconds: 2, runAtStart: true});
 scheduler.addJob(job);
 
 setTimeout(()=>{
+    console.log('Scheduler status');
     console.log(scheduler.status());
     scheduler.stop();
 }, 8000);
