@@ -1,5 +1,6 @@
-import { Task } from "./task";
+import { AsyncTask, SyncTask, Task } from "./task";
 import { v4 } from 'uuid';
+import { AsyncFn, SyncFn } from "../utils";
 
 export enum JobStatus {
     NOT_STARTED = 'NOT_STARTED',
@@ -7,16 +8,15 @@ export enum JobStatus {
     STOPPED = 'STOPPED'
 };
 
-type SchedulerOptions = {
+export type SchedulerOptions = {
     milliseconds?: number,
     seconds?: number,
     minutes?: number,
     hours?: number,
     days?: number,
-    runAtStart?: boolean
 }
 
-const getMilliseconds = (options: SchedulerOptions): number => {
+export const getMilliseconds = (options: SchedulerOptions): number => {
     const {
         milliseconds = 0,
         seconds = 0,
@@ -29,21 +29,47 @@ const getMilliseconds = (options: SchedulerOptions): number => {
         + seconds * 1000
         + minutes * 60 * 1000
         + hours * 60 * 60 * 1000
-        + days * 24 * 60 * 60 * 1000
+        + days * 24 * 60 * 60 * 1000;
+}
+
+type JobOptions = {
+    runAtStart?: boolean,
+    isAsync?: true,
+    errorHandler?: (e: Error) => void,
+    id?: string;
 }
 
 export class Job {
 
     public readonly id: string;
+
     private timerId: NodeJS.Timer;
+    private readonly timerDuration: number;
+
     private status: JobStatus;
     private readonly task: Task;
-    private readonly schedulerOptions: SchedulerOptions;
+    private readonly runAtStart: boolean;
 
-    constructor(task: Task, schedulerOptions: SchedulerOptions) {
-        this.task = task;
-        this.id = v4();
-        this.schedulerOptions = schedulerOptions;
+    constructor(fn: SyncFn | AsyncFn, schedulerOptions: SchedulerOptions, jobOptions: JobOptions = {}) {
+        let {
+            errorHandler,
+            isAsync = false,
+            runAtStart = true,
+            id
+        } = jobOptions;
+
+        if (!id) {
+            id = v4();
+        }
+
+        isAsync
+            ? this.task = new AsyncTask(id, fn as AsyncFn, errorHandler)
+            : this.task = new SyncTask(id, fn as SyncFn, errorHandler);
+
+        this.id = id;
+        this.runAtStart = runAtStart;
+        this.timerDuration = getMilliseconds(schedulerOptions);
+
         this.status = JobStatus.NOT_STARTED;
     }
 
@@ -54,10 +80,10 @@ export class Job {
         // already running
         this.timerId ? this.stop() : null;
 
-        if (this.schedulerOptions.runAtStart) {
+        if (this.runAtStart) {
             this.task.handle();
         }
-        this.timerId = setInterval(() => this.task.handle(), getMilliseconds(this.schedulerOptions));
+        this.timerId = setInterval(() => this.task.handle(), this.timerDuration);
         this.status = JobStatus.RUNNING;
     }
 

@@ -1,4 +1,4 @@
-import { Job, JobStatus, Scheduler, SyncTask, AsyncTask } from './index';
+import { Job, Scheduler, SyncTask, AsyncTask } from './index';
 
 
 const everySecond = () => {
@@ -11,19 +11,17 @@ const every3Seconds = () => {
 
 const scheduler = new Scheduler();
 
-const task = new SyncTask('firstTask', everySecond);
-const task2 = new SyncTask('secondTask', every3Seconds);
+const job1 = new Job(everySecond, { seconds: 1 }, { id: 'job1' });
+const job2 = new Job(every3Seconds, { seconds: 3 });
 
-const job = new Job(task, { seconds: 1, runAtStart: true });
-const job2 = new Job(task2, { seconds: 3 })
 
-scheduler.addJob(job);
+scheduler.addJob(job1);
 scheduler.addJob(job2);
 
 setInterval(() => {
     console.log('Scheduler status');
     console.log(scheduler.status());
-    console.log(job.getStatus())
+    console.log(job1.getStatus())
     console.log(job2.getStatus())
 }, 6000);
 
