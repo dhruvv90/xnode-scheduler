@@ -1,1 +1,5 @@
-const x: string = 'abcd';
+import * as x from './example';
+x;
+
+
+
