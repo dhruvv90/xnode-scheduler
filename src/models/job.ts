@@ -1,5 +1,5 @@
 import { Task } from "./task";
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
 
 export enum JobStatus {
     NOT_STARTED,
@@ -42,7 +42,7 @@ export class Job {
 
     constructor(task: Task, schedulerOptions: SchedulerOptions) {
         this.task = task;
-        this.id = uuid();
+        this.id = v4();
         this.schedulerOptions = schedulerOptions;
         this.status = JobStatus.NOT_STARTED;
     }
@@ -57,7 +57,7 @@ export class Job {
         if (this.schedulerOptions.runAtStart) {
             this.task.handle();
         }
-        this.timerId = setInterval(()=> this.task.handle(), getMilliseconds(this.schedulerOptions));
+        this.timerId = setInterval(() => this.task.handle(), getMilliseconds(this.schedulerOptions));
         this.status = JobStatus.RUNNING;
     }
 
