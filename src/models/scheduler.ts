@@ -1,4 +1,4 @@
-import { Job } from "./job";
+import { Job, JobStatus } from "./job";
 
 
 export class Scheduler {
@@ -44,16 +44,22 @@ export class Scheduler {
     }
 
     stop(): void {
-        Object.values(this.jobs).forEach((job)=>{
+        Object.values(this.jobs).forEach((job) => {
             job.stop();
         });
     }
 
     status(): object {
-        const summary = {};
-        Object.keys(this.jobs).forEach((id)=>{
+        const jobList = Object.keys(this.jobs);
+        const summary = {
+            totalJobs: jobList.length,
+        };
+
+        const details = {};
+        const activeJobs = 0, IdleJobs = 0;
+        jobList.map((id) => {
             const job = this.jobs[id];
-            summary[id] = job.getStatus();
+            details[id] = job.getStatus();
         })
         return summary;
     }
