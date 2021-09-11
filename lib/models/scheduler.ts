@@ -49,7 +49,7 @@ export class Scheduler {
         });
     }
 
-    status(): object {
+    status(): Record<string, unknown> {
         const activeJobs = [], idleJobs = [];
         Object.entries(this.jobs).forEach(([id, job]) => {
             job.getStatus() === JobStatus.RUNNING

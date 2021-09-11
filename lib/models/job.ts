@@ -8,7 +8,7 @@ export enum JobStatus {
     NOT_STARTED = 'NOT_STARTED',
     RUNNING = 'RUNNING',
     STOPPED = 'STOPPED'
-};
+}
 
 export type SchedulerOptions = {
     milliseconds?: number,
@@ -53,16 +53,12 @@ export class Job {
     private readonly runAtStart: boolean;
 
     constructor(fn: SyncFn | AsyncFn, schedulerOptions: SchedulerOptions, jobOptions: JobOptions = {}) {
-        let {
+        const {
             errorHandler,
             isAsync = false,
             runAtStart = true,
-            id
+            id = v4()
         } = jobOptions;
-
-        if (!id) {
-            id = v4();
-        }
 
         isAsync
             ? this.task = new AsyncTask(id, fn as AsyncFn, errorHandler)

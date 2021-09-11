@@ -1,4 +1,4 @@
-import { Job, Scheduler, SyncTask, AsyncTask } from './index';
+import { Job, Scheduler } from './index';
 
 
 const everySecond = () => {
