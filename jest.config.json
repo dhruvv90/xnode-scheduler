@@ -1,0 +1,35 @@
+{
+    "moduleFileExtensions": [
+        "ts",
+        "js",
+        "json"
+    ],
+    "testMatch": [
+        "<rootDir>/test/**/*.(spec|test).js"
+    ],
+    "transform": {
+        "^.+\\.ts$": "ts-jest"
+    },
+    "testEnvironment": "node",
+    "reporters": [
+        "default"
+    ],
+    "coveragePathIgnorePatterns": [
+        "<rootDir>/node_modules/",
+        "<rootDir>/coverage/",
+        "<rootDir>/test/utils/"
+    ],
+    "globals": {
+        "ts-jest": {
+            "diagnostics": false
+        }
+    },
+    "coverageThreshold": {
+        "global": {
+            "statements": 100,
+            "branches": 100,
+            "functions": 100,
+            "lines": 100
+        }
+    }
+}
