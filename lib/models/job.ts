@@ -56,7 +56,7 @@ export class Job {
         const {
             errorHandler,
             isAsync = false,
-            runAtStart = true,
+            runAtStart = false,
             id = v4()
         } = jobOptions;
 
