@@ -14,13 +14,15 @@
     "eslint": "^7.32.0",
     "jest": "^27.1.1",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "husky": "^7.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "eslint . --ext .ts",
     "test": "jest --config=jest.config.json",
-    "test:coverage": "jest --config=jest.config.json --coverage"
+    "test:coverage": "jest --config=jest.config.json --coverage",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
