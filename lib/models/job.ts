@@ -1,19 +1,11 @@
-import { AsyncTask, SyncTask, Task } from "./task";
 import { v4 } from 'uuid';
 
-export type SyncFn = () => void;
-export type AsyncFn = () => Promise<void>;
+export type SyncFn<x = any> = (p?: x) => void;
+export type AsyncFn<x = any> = (p?: x) => Promise<void>;
+export type Fn<x = any> = SyncFn<x> | AsyncFn<x>;
 
-const MAX_DELAY = 2147483647;
 
-type JobOptions = {
-    runAtStart?: boolean,
-    isAsync?: true,
-    errorHandler?: (e: Error) => void,
-    id?: string;
-}
-
-export type SchedulerOptions = {
+type TimerOptions = {
     milliseconds?: number,
     seconds?: number,
     minutes?: number,
@@ -27,67 +19,75 @@ export enum JobStatus {
     STOPPED = 'STOPPED'
 }
 
-export const getMilliseconds = (options: SchedulerOptions): number => {
-    const {
-        milliseconds = 0,
-        seconds = 0,
-        minutes = 0,
-        hours = 0,
-        days = 0,
-    } = options;
 
-    return milliseconds * 1
-        + seconds * 1000
-        + minutes * 60 * 1000
-        + hours * 60 * 60 * 1000
-        + days * 24 * 60 * 60 * 1000;
-}
-
-export class Job {
-
+export abstract class Job {
     public readonly id: string;
 
+    protected readonly fn: Fn;
+    protected readonly errorHandler: Fn<Error>;
+
+    public status: JobStatus;
+
+    private readonly runAtStart: boolean;
     private timerId: NodeJS.Timer;
     private readonly timerDuration: number;
 
-    private status: JobStatus;
-    private readonly task: Task;
-    private readonly runAtStart: boolean;
+    private readonly MAX_DELAY = 2147483647;
 
-    constructor(fn: SyncFn | AsyncFn, schedulerOptions: SchedulerOptions, jobOptions: JobOptions = {}) {
-        const {
-            errorHandler,
-            isAsync = false,
-            runAtStart = false,
-            id = v4()
-        } = jobOptions;
+    public constructor(
+        fn: SyncFn,
+        timerOptions: TimerOptions,
+        id?: string,
+        errorHandler?: Fn<Error>,
+        runAtStart: boolean = true
+    ) {
+        this.fn = fn;
+        this.id = id || v4();
+        this.errorHandler = errorHandler || this.defaultErrorHandler();
 
-        isAsync
-            ? this.task = new AsyncTask(id, fn as AsyncFn, errorHandler)
-            : this.task = new SyncTask(id, fn as SyncFn, errorHandler);
-
-        this.id = id;
         this.runAtStart = runAtStart;
 
-        this.timerDuration = getMilliseconds(schedulerOptions);
-        if(this.timerDuration >= MAX_DELAY ){
+        this.timerDuration = this.getMilliseconds(timerOptions);
+        if (this.timerDuration >= this.MAX_DELAY) {
             throw new Error(`Error in creating Job : "${this.id}". Time delays greater than or equal to 2147483647 are not supported yet`);
         }
-
         this.status = JobStatus.NOT_STARTED;
     }
 
+    private getMilliseconds(options: TimerOptions) {
+        const {
+            milliseconds = 0,
+            seconds = 0,
+            minutes = 0,
+            hours = 0,
+            days = 0,
+        } = options;
+
+        return milliseconds * 1
+            + seconds * 1000
+            + minutes * 60 * 1000
+            + hours * 60 * 60 * 1000
+            + days * 24 * 60 * 60 * 1000;
+    }
+
+    private defaultErrorHandler(): Fn<Error> {
+        return (e: Error): void => {
+            console.log(`Error in running task with id : ${this.id} with error - ${e.message}`);
+        }
+    }
+
+    protected abstract handle(): void;
+
     /**
-     * Start a job or restart a job if already running
-     *  */
+    * Start a job or restart a job if already running
+    *  */
     start(): void {
-        // already running
         this.timerId ? this.stop() : null;
 
         if (this.runAtStart) {
-            this.task.handle();
+            this.handle();
         }
-        this.timerId = setInterval(() => this.task.handle(), this.timerDuration);
+        this.timerId = setInterval(() => this.handle(), this.timerDuration);
         this.status = JobStatus.RUNNING;
     }
 
@@ -99,8 +99,28 @@ export class Job {
         this.status = JobStatus.STOPPED;
         this.timerId = undefined;
     }
+}
 
-    getStatus(): JobStatus {
-        return this.status;
+export class JobSync extends Job {
+
+    protected readonly fn: SyncFn;
+
+    handle() {
+        try {
+            this.fn();
+        }
+        catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+}
+
+export class JobAsync extends Job {
+
+    protected readonly fn: AsyncFn;
+
+    handle() {
+        this.fn().catch(this.errorHandler);
     }
 }
