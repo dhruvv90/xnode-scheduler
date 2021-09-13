@@ -62,7 +62,5 @@ export class Scheduler {
             activeJobs,
             idleJobs,
         }
-
     }
-
 }

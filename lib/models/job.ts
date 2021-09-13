@@ -39,7 +39,7 @@ export abstract class Job {
         timerOptions: TimerOptions,
         id?: string,
         errorHandler?: Fn<Error>,
-        runAtStart: boolean = true
+        runAtStart = true
     ) {
         this.fn = fn;
         this.id = id || v4();
