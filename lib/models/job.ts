@@ -1,13 +1,16 @@
 import { AsyncTask, SyncTask, Task } from "./task";
 import { v4 } from 'uuid';
-import { AsyncFn, SyncFn } from "../utils";
+
+export type SyncFn = () => void;
+export type AsyncFn = () => Promise<void>;
 
 const MAX_DELAY = 2147483647;
 
-export enum JobStatus {
-    NOT_STARTED = 'NOT_STARTED',
-    RUNNING = 'RUNNING',
-    STOPPED = 'STOPPED'
+type JobOptions = {
+    runAtStart?: boolean,
+    isAsync?: true,
+    errorHandler?: (e: Error) => void,
+    id?: string;
 }
 
 export type SchedulerOptions = {
@@ -16,6 +19,12 @@ export type SchedulerOptions = {
     minutes?: number,
     hours?: number,
     days?: number,
+}
+
+export enum JobStatus {
+    NOT_STARTED = 'NOT_STARTED',
+    RUNNING = 'RUNNING',
+    STOPPED = 'STOPPED'
 }
 
 export const getMilliseconds = (options: SchedulerOptions): number => {
@@ -32,13 +41,6 @@ export const getMilliseconds = (options: SchedulerOptions): number => {
         + minutes * 60 * 1000
         + hours * 60 * 60 * 1000
         + days * 24 * 60 * 60 * 1000;
-}
-
-type JobOptions = {
-    runAtStart?: boolean,
-    isAsync?: true,
-    errorHandler?: (e: Error) => void,
-    id?: string;
 }
 
 export class Job {
@@ -101,5 +103,4 @@ export class Job {
     getStatus(): JobStatus {
         return this.status;
     }
-
 }

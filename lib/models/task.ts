@@ -1,4 +1,4 @@
-import { AsyncFn, SyncFn } from "../utils";
+import { AsyncFn, SyncFn } from "./job";
 
 const defaultErrorHandler = function (name: string) {
     return (e: Error): void => {
@@ -10,7 +10,7 @@ export abstract class Task {
     private readonly id: string;
     protected readonly errorHandler: (err: Error) => void;
 
-    protected constructor(id: string, errorHandler?: (err: Error) => void){
+    protected constructor(id: string, errorHandler?: (err: Error) => void) {
         this.id = id;
         this.errorHandler = errorHandler || defaultErrorHandler(this.id);
     }
