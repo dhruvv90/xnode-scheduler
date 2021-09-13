@@ -107,7 +107,8 @@ export class JobSync extends Job {
 
     handle() {
         try {
-            this.fn(); 
+            this.fn();
+            let x;
         }
         catch (e) {
             this.errorHandler(e);
