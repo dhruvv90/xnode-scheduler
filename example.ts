@@ -1,4 +1,5 @@
-import { Job, Scheduler } from './index';
+import { Scheduler } from './index';
+import { JobSync } from './lib';
 
 
 const everySecond = () => {
@@ -11,8 +12,8 @@ const every3Seconds = () => {
 
 const scheduler = new Scheduler();
 
-const job1 = new Job(everySecond, { seconds: -1 }, { id: 'job1' });
-const job2 = new Job(every3Seconds, { seconds: 2147483647 }, {id: 'testtttt'});
+const job1 = new JobSync(everySecond, {seconds: 1});
+const job2 = new JobSync(every3Seconds, { seconds: -1 }, 'job2');
 
 
 scheduler.addJob(job1);
@@ -21,8 +22,8 @@ scheduler.addJob(job2);
 setInterval(() => {
     console.log('Scheduler status');
     console.log(scheduler.status());
-    console.log(job1.getStatus())
-    console.log(job2.getStatus())
+    console.log(job1.status)
+    console.log(job2.status)
 }, 6000);
 
 setTimeout(() => {
