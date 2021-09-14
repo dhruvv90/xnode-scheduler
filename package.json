@@ -1,5 +1,5 @@
 {
-  "name": "node-task-scheduler",
+  "name": "x-node-job-scheduler",
   "version": "1.0.0",
   "description": "Simple In-memory job scheduler for Node.js",
   "main": "index.ts",
@@ -26,14 +26,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dhruvv90/node-task-scheduler.git"
+    "url": "git+https://github.com/dhruvv90/x-node-job-scheduler.git"
   },
   "author": "dhruvv90",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dhruvv90/node-task-scheduler/issues"
+    "url": "https://github.com/dhruvv90/x-node-job-scheduler/issues"
   },
-  "homepage": "https://github.com/dhruvv90/node-task-scheduler#readme",
+  "homepage": "https://github.com/dhruvv90/x-node-job-scheduler#readme",
   "directories": {
     "lib": "lib",
     "test": "test"
