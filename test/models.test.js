@@ -1,39 +1,35 @@
-const { JobStatus } = require('../lib');
-const { Job } = require('../index')
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { JobStatus, JobAsync, JobSync } = require('../index');
 
 
 describe('Job Tests', () => {
 
     it('Constructed job should have correct attributes', () => {
-
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const fn = () => { };
-        const j = new Job(fn, { seconds: 1 }, { id: 'id' })
-        expect(j.id).toEqual('id');
-        expect(j.getStatus()).toEqual(JobStatus.NOT_STARTED);
+        const j = new JobSync(fn, {seconds: 1}, 'testJob', undefined, true);
 
-        j.stop();
-        expect(j.getStatus()).toEqual(JobStatus.NOT_STARTED);
-
-
+        expect(j.id).toEqual('testJob');
+        expect(j.status).toEqual(JobStatus.NOT_STARTED);
     })
 
     it('should have correct status while running and stopping', () => {
         let counter = 0;
         const fn = () => counter++;
-        const j = new Job(fn, { seconds: 1 }, { id: 'id' })
+        const j = new JobSync(fn, {seconds: 1}, 'firstJob', undefined, true);
 
         j.start();
-        expect(j.getStatus() === JobStatus.RUNNING);
+        expect(j.status === JobStatus.RUNNING);
 
         j.stop();
-        expect(j.getStatus() === JobStatus.STOPPED);
+        expect(j.status === JobStatus.STOPPED);
     })
 
     it('should run Sync function correctly', () => {
         jest.useFakeTimers();
         let counter = 0;
         const fn = () => counter++;
-        const j = new Job(fn, { seconds: 1 }, { id: 'id' })
+        const j = new JobSync(fn, {seconds: 1}, 'testJob', undefined, false);
 
         j.start();
 
