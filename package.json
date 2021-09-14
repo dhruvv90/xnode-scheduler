@@ -20,8 +20,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "eslint . --ext .ts",
-    "test": "jest --config=jest.config.json",
-    "test:coverage": "jest --config=jest.config.json --coverage",
+    "test": "jest --config=jest.config.json --detectOpenHandles",
+    "test:coverage": "jest --config=jest.config.json --detectOpenHandles --coverage",
     "prepare": "husky install"
   },
   "repository": {
