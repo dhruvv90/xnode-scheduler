@@ -1,11 +1,9 @@
 {
-  "name": "x-node-job-scheduler",
+  "name": "xnode-scheduler",
   "version": "1.0.1",
   "description": "Simple In-memory job scheduler for Node.js",
-  "main": "index.ts",
-  "dependencies": {
-    "uuidv4": "^6.2.12"
-  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/node": "^16.9.1",
@@ -40,10 +38,16 @@
   },
   "keywords": [
     "scheduler",
+    "xnode-scheduler",
     "node-scheduler",
     "in-memory",
     "job",
     "task",
     "schedule"
+  ],
+  "files": [
+    "README.md",
+    "LICENSE",
+    "dist/*"
   ]
 }

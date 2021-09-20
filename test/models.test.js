@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { JobStatus, IntervalBasedJob, Scheduler } = require('../lib');
+const { JobStatus, IntervalBasedJob, XnodeScheduler } = require('../dist/index');
 
 
 describe('Model Tests', () => {
@@ -82,7 +82,7 @@ describe('Model Tests', () => {
         it('should have correct status while running and stopping', () => {
             jest.useFakeTimers();
             let counter = 0;
-            const fn = async () => setTimeout(_ => counter++, 2000);
+            const fn = async () => setTimeout(() => counter++, 2000);
             const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.status === JobStatus.NOT_STARTED);
@@ -97,7 +97,7 @@ describe('Model Tests', () => {
         it('should run correctly', () => {
             jest.useFakeTimers();
             let counter = 0;
-            const fn = jest.fn(async () => setTimeout(_ => counter++, 1000));
+            const fn = jest.fn(async () => setTimeout(() => counter++, 1000));
             const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.status === JobStatus.NOT_STARTED);
@@ -127,7 +127,7 @@ describe('Model Tests', () => {
     describe('Scheduler Tests', () => {
 
         test('Add and Get Jobs', () => {
-            const s = new Scheduler();
+            const s = new XnodeScheduler();
 
             let counter = 0;
             const fn = () => counter++;
@@ -148,7 +148,7 @@ describe('Model Tests', () => {
         })
 
         test('Start and stop Job', () => {
-            const s = new Scheduler();
+            const s = new XnodeScheduler();
 
             let counter = 0;
             const fn = () => counter++;
@@ -180,7 +180,7 @@ describe('Model Tests', () => {
         })
 
         it('shows error on adding same job again', () => {
-            const s = new Scheduler();
+            const s = new XnodeScheduler();
             let counter = 0;
             const fn = () => counter++;
 
@@ -201,7 +201,7 @@ describe('Model Tests', () => {
 
             const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
 
-            const s = new Scheduler();
+            const s = new XnodeScheduler();
             s.addJob(j1);
 
 
@@ -228,7 +228,7 @@ describe('Model Tests', () => {
             const j3 = new IntervalBasedJob('j3', fn, { seconds: 1 });
 
 
-            const s = new Scheduler();
+            const s = new XnodeScheduler();
             s.addJob(j1);
             s.addJob(j2);
             s.addJob(j3);
@@ -270,7 +270,7 @@ describe('Model Tests', () => {
             const j2 = new IntervalBasedJob('j2', fn, { seconds: 1 });
             const j3 = new IntervalBasedJob('j3', fn, { seconds: 1 });
 
-            const s = new Scheduler();
+            const s = new XnodeScheduler();
             s.addJob(j1);
             s.addJob(j2);
             s.addJob(j3);

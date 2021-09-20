@@ -1,2 +1,2 @@
 export { JobStatus, IntervalBasedJob } from './models/job';
-export { Scheduler } from './models/scheduler';
+export { XnodeScheduler } from './models/xnode-scheduler';
