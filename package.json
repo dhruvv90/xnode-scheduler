@@ -3,9 +3,6 @@
   "version": "1.0.1",
   "description": "Simple In-memory job scheduler for Node.js",
   "main": "index.ts",
-  "dependencies": {
-    "uuidv4": "^6.2.12"
-  },
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/node": "^16.9.1",
