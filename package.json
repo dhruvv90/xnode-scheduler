@@ -1,8 +1,8 @@
 {
   "name": "xnode-scheduler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple In-memory job scheduler for Node.js",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
     "@types/jest": "^27.0.1",
