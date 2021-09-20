@@ -1,7 +1,7 @@
 import { Job, JobStatus } from "./job";
 
 
-export class Scheduler {
+export class XnodeScheduler {
 
     private readonly jobs: Record<string, Job>;
 
