@@ -82,7 +82,7 @@ describe('Model Tests', () => {
         it('should have correct status while running and stopping', () => {
             jest.useFakeTimers();
             let counter = 0;
-            const fn = async () => setTimeout(_ => counter++, 2000);
+            const fn = async () => setTimeout(() => counter++, 2000);
             const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.status === JobStatus.NOT_STARTED);
@@ -97,7 +97,7 @@ describe('Model Tests', () => {
         it('should run correctly', () => {
             jest.useFakeTimers();
             let counter = 0;
-            const fn = jest.fn(async () => setTimeout(_ => counter++, 1000));
+            const fn = jest.fn(async () => setTimeout(() => counter++, 1000));
             const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.status === JobStatus.NOT_STARTED);
