@@ -51,7 +51,7 @@ export class Scheduler {
 
     status(): Record<string, unknown> {
         const activeJobs = [], idleJobs = [];
-        Object.entries(this.jobs).forEach(([id, job]) => {
+        Object.values(this.jobs).forEach((job) => {
             job.status === JobStatus.RUNNING
                 ? activeJobs.push(job)
                 : idleJobs.push(job)

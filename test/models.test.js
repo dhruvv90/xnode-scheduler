@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { JobStatus, JobAsync, JobSync } = require('../lib');
-const { Scheduler } = require('../lib');
+const { JobStatus, IntervalBasedJob, Scheduler } = require('../lib');
 
 
 describe('Model Tests', () => {
@@ -9,7 +8,7 @@ describe('Model Tests', () => {
         it('Constructed job should have correct attributes', () => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             const fn = () => { };
-            const j = new JobSync(fn, { seconds: 1 }, 'testJob', undefined, true);
+            const j = new IntervalBasedJob('testJob', fn, { seconds: 1 });
 
             expect(j.id).toEqual('testJob');
             expect(j.status).toEqual(JobStatus.NOT_STARTED);
@@ -19,7 +18,7 @@ describe('Model Tests', () => {
         it('should have correct status while running and stopping', () => {
             let counter = 0;
             const fn = () => counter++;
-            const j = new JobSync(fn, { seconds: 1 }, 'firstJob', undefined, true);
+            const j = new IntervalBasedJob('firstJob', fn, { seconds: 1 });
 
             j.start();
             expect(j.status === JobStatus.RUNNING);
@@ -32,7 +31,7 @@ describe('Model Tests', () => {
             jest.useFakeTimers();
             let counter = 0;
             const fn = () => counter++;
-            const j = new JobSync(fn, { seconds: 1 }, 'testJob', undefined, false);
+            const j = new IntervalBasedJob('firstJob', fn, { seconds: 1 });
 
             j.start();
 
@@ -54,7 +53,7 @@ describe('Model Tests', () => {
         it('should restart job correctly', () => {
             let counter = 0;
             const fn = () => counter++;
-            const j = new JobSync(fn, { seconds: 1 }, 'j');
+            const j = new IntervalBasedJob('firstJob', fn, { seconds: 1 });
 
             j.start();
             expect(j.status).toEqual(JobStatus.RUNNING);
@@ -74,7 +73,7 @@ describe('Model Tests', () => {
         it('Constructed job should have correct attributes', () => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             const fn = () => { return new Promise(); };
-            const j = new JobAsync(fn, { seconds: 1 }, 'testJob', undefined, true);
+            const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.id).toEqual('testJob');
             expect(j.status).toEqual(JobStatus.NOT_STARTED);
@@ -84,7 +83,7 @@ describe('Model Tests', () => {
             jest.useFakeTimers();
             let counter = 0;
             const fn = async () => setTimeout(_ => counter++, 2000);
-            const j = new JobSync(fn, { seconds: 1 }, 'firstJob', undefined, true);
+            const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.status === JobStatus.NOT_STARTED);
 
@@ -99,7 +98,7 @@ describe('Model Tests', () => {
             jest.useFakeTimers();
             let counter = 0;
             const fn = jest.fn(async () => setTimeout(_ => counter++, 1000));
-            const j = new JobAsync(fn, { seconds: 1 }, 'testJob', undefined, false);
+            const j = new IntervalBasedJob('testJob', fn, { seconds: 1 }, { async: true });
 
             expect(j.status === JobStatus.NOT_STARTED);
 
@@ -132,7 +131,7 @@ describe('Model Tests', () => {
 
             let counter = 0;
             const fn = () => counter++;
-            const j1 = new JobSync(fn, { seconds: 1 }, 'j1');
+            const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
 
             s.addJob(j1);
 
@@ -154,7 +153,7 @@ describe('Model Tests', () => {
             let counter = 0;
             const fn = () => counter++;
 
-            const j1 = new JobSync(fn, { seconds: 1 }, 'j1');
+            const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
 
             s.addJob(j1);
 
@@ -184,7 +183,8 @@ describe('Model Tests', () => {
             const s = new Scheduler();
             let counter = 0;
             const fn = () => counter++;
-            const j1 = new JobSync(fn, { seconds: 1 }, 'j1');
+
+            const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
 
             s.addJob(j1);
 
@@ -198,7 +198,8 @@ describe('Model Tests', () => {
         test('Remove Job correctly', () => {
             let counter = 0;
             const fn = () => counter++;
-            const j1 = new JobSync(fn, { seconds: 1 }, 'j1');
+
+            const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
 
             const s = new Scheduler();
             s.addJob(j1);
@@ -207,7 +208,7 @@ describe('Model Tests', () => {
             s.removeJob('non existent');
 
             const jTest = s.getJob('j1');
-            expect(jTest).toBeInstanceOf(JobSync);
+            expect(jTest).toBeInstanceOf(IntervalBasedJob);
             expect(jTest.id === 'j1');
 
             s.removeJob('j1');
@@ -222,9 +223,10 @@ describe('Model Tests', () => {
         it('correctly shows status summary', () => {
             let counter = 0;
             const fn = () => counter++;
-            const j1 = new JobSync(fn, { seconds: 1 }, 'j1');
-            const j2 = new JobSync(fn, { seconds: 1 }, 'j2');
-            const j3 = new JobSync(fn, { seconds: 1 }, 'j3');
+            const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
+            const j2 = new IntervalBasedJob('j2', fn, { seconds: 1 });
+            const j3 = new IntervalBasedJob('j3', fn, { seconds: 1 });
+
 
             const s = new Scheduler();
             s.addJob(j1);
@@ -264,9 +266,9 @@ describe('Model Tests', () => {
         it('stops all jobs correctly', () => {
             let counter = 0;
             const fn = () => counter++;
-            const j1 = new JobSync(fn, { seconds: 1 }, 'j1');
-            const j2 = new JobSync(fn, { seconds: 1 }, 'j2');
-            const j3 = new JobSync(fn, { seconds: 1 }, 'j3');
+            const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
+            const j2 = new IntervalBasedJob('j2', fn, { seconds: 1 });
+            const j3 = new IntervalBasedJob('j3', fn, { seconds: 1 });
 
             const s = new Scheduler();
             s.addJob(j1);
