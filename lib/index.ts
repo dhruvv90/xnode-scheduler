@@ -1,2 +1,2 @@
-export { JobStatus, JobSync, JobAsync } from './models/job';
+export { JobStatus, IntervalBasedJob } from './models/job';
 export { Scheduler } from './models/scheduler';
