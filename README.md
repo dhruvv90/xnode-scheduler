@@ -109,6 +109,11 @@ scheduler.stop()
 * `seconds?: number` - how many seconds to wait before executing the job for the next time
 * `milliseconds?: number` - how many milliseconds to wait before executing the job for the next time
 
+## JobOptions
+* `async?: boolean` - Whether the task is asynchronous
+* `errorHandler?: Fn(e:Error)` - Error handler for each invocation. Optional - By default - it prints Job ID and error message to console.
+* `runImmediately?: boolean` - If true, Job's first run will be immediately when started. By default - it is undefined.
+
 
 ## XnodeScheduler
 
