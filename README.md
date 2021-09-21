@@ -73,10 +73,9 @@ scheduler.stop()
 ## Notes for Usage
 
 * For asyncronous Jobs, we need to provide `async : true` within JobOptions. Using sync tasks with `async:true` might lead to unhandled rejections. 
-* This library does not manage any throttling or caching.
+* This library does not do throttling or caching.
 * Firing too many async Jobs in a short interval might lead to queuing up requests - leading to low performance. Delays should be used with caution.
-* Firing too many sync Jobs in a relatively short interval may screw up the timings of next run due to blocking.
-* For Async Jobs, it is highly recommended to use promise chaining instead of async/await within IntervalBasedJob's function definition. This is to avoid memory leaks due to calling contexts.
+* For Async Jobs, it is highly recommended to use promise chaining instead of async/await pattern within function definition. This is to avoid memory leaks due to calling contexts.
 
 ## Error Handling
 * For both sync/async, `JobOptions` has errorHandler function which takes `e: Error` parameter.

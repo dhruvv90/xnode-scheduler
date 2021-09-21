@@ -10,7 +10,7 @@ type IntervalOptions = {
 
 type JobOptions = {
 
-    /** Whether the job should run asynchronously */
+    /** Whether the job is asynchronous */
     async?: boolean;
 
     /** 
