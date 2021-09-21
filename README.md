@@ -13,8 +13,6 @@ Simple In-memory Node.js job scheduler library to execute tasks within fixed int
 * Created for NodeJS. Not yet tested for browsers.
 
 
-**[Sept 2021]**  *This library is being heavily tested at the moment. It is expected to be production ready soon*
-
 ## Getting started
 
 Installation:
