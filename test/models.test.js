@@ -1,8 +1,30 @@
+/* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { JobStatus, IntervalBasedJob, XnodeScheduler } = require('../dist/index');
 
 
 describe('Model Tests', () => {
+
+    let unhandledRej = 0, uncaughtEx = 0;
+
+    beforeAll(() => {
+        process.on('uncaughtException', () => uncaughtEx++);
+        process.on('unhandledRejection', () => unhandledRej++);
+    })
+
+    beforeEach(() => {
+        unhandledRej = 0;
+        uncaughtEx = 0;
+    });
+
+    afterEach(() => {
+        expect(unhandledRej).toBe(0);
+        expect(uncaughtEx).toBe(0);
+
+        jest.useRealTimers()
+    })
+
+
     describe('JobSync Tests', () => {
 
         it('Constructed job should have correct attributes', () => {
