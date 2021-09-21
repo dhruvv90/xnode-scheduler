@@ -1,44 +1,61 @@
-# x-node-job-scheduler
+# xnode-scheduler
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 
-Simple In-memory Node.js job scheduling library to execute specified tasks within fixed intervals of time (e.g. "each x seconds")
+Simple In-memory Node.js job scheduler library to execute tasks within fixed intervals
+* Useful to run sync/async(promise based) jobs every fixed interval with delay 'x'. Uses NodeJS **SetInterval** under the wraps.
+* Not suitable to run cron expressions **yet**
+* Supports `milliseconds`, `seconds`, `minutes`, `hours`, `days` as inputs. Range of delays supported : `1 millisecond` to `2147483646 milliseconds`
+* Created in Typescript.
+* No dependency on any external package
+* Does not support caching
+* Created for NodeJS. Not yet tested for browsers.
 
-Created in Typescript
 
-*[Sept 2021] This library is under active development and being properly tested at the moment. It is expected to complete very soon*
+**[Sept 2021]**  *This library is being heavily tested at the moment. It is expected to be production ready soon*
 
 ## Getting started
 
 Installation:
 
 ```bash
-npm i x-node-job-scheduler
+npm i xnode-scheduler
 ```
 
 Usage Example:
 
 ```js
-const {JobAsync, JobSync, Scheduler, JobStatus} = require('x-node-job-scheduler')
+const { JobStatus, IntervalBasedJob, XnodeScheduler } = require('../dist/index');
 
 // Create Scheduler instance
-const scheduler = new Scheduler();
+const scheduler = new XnodeScheduler();
 
 // Define job and errorHandler(optional)
 const fn = function() { counter++}
 const errorHandler = function(error){ console.log(error.message )}
 
 // Create Jobs
-const j1 = new JobSync(fn, {seconds: 30, minutes: 1})
-const j2 = new JobSync(fn, {hours: 2}, 'jobId2', errorHandler, false);
+const j1 = new IntervalBasedJob('j1', fn, { seconds: 1 });
+const j2 = new IntervalBasedJob('j2', fn, { hours: 2 }, {
+    async: true,
+    errorHandler: (error)=>{console.log(error)},
+    runImmediately: true
+});
 
 // Add Jobs to scheduler
 scheduler.addJob(j1);
 scheduler.addJob(j2);
 
+scheduler.removeJob('jn'); // Removes and stops the job
+
+scheduler.getJob('jx') // throws error for non existent Job ID
+
+const test = scheduler.getJob('j1');
+assert(test instanceof IntervalBasedJob);
+
 // Stop a particular job
-scheduler.stopJob(j1.id);
+scheduler.stopJob('j1');
 
 // Job Statuses mapped to JobStatus Enum
 assert(j1.status === JobStatus.STOPPED);
@@ -51,62 +68,51 @@ scheduler.status();
 
 // Stop All running jobs
 scheduler.stop()
-
 ```
 
-## Usage with async tasks - `JobAsync`
+## Notes for Usage
 
-For asyncronous Jobs, we need to use class JobAsync while creating Job instance. Using sync task(fn) within JobAsync might lead to unhandled rejections.
-
-```js
-const {JobAsync, JobSync, Scheduler, JobStatus} = require('x-node-job-scheduler')
-
-// Create Scheduler instance
-const scheduler = new Scheduler();
-
-// Define async job and errorHandler(optional)
-let counter = 0;
-const asyncFn = function() { return someAsyncCall().then(result=> 'continue chain') }
-const errorHandler = function(error){ console.log(error.message )}
-
-// Create async Job
-const jAsync = new JobAsync(fn, {seconds: 10}, undefined, errorHandler);
-
-// Add Job to scheduler
-scheduler.addJob(jAsync);
-
-// Stop All running jobs
-scheduler.stop()
-```
-
-Note that in order to avoid memory leaks due to calling contexts, it is highly recommended to use promise chaining instead of async/await within JobAsync fn definition. 
+* For asyncronous Jobs, we need to provide `async : true` within JobOptions. Using sync tasks with `async:true` might lead to unhandled rejections. 
+* This library does not manage any throttling or caching.
+* Firing too many async Jobs in a short interval might lead to queuing up requests - leading to low performance. Delays should be used with caution.
+* Firing too many sync Jobs in a relatively short interval may screw up the timings of next run due to blocking.
+* For Async Jobs, it is highly recommended to use promise chaining instead of async/await within IntervalBasedJob's function definition. This is to avoid memory leaks due to calling contexts.
 
 ## Error Handling
-For both JobSync and JobAsync we can provide a custom error handler function with 1 param - `(error: Error)`. This is optional and if not provided (or falsy), default error handler prints the error to console.
-
-**Note** : For JobAsync , we should not provide a seperate `.catch()` block within the task definition. Contents of catch function must be written in the form of Error handler of JobAsync class
-
-## API for `TimerOptions`
-
-* `days?: number` - how many days to wait before executing the job for the next time;
-* `hours?: number` - how many hours to wait before executing the job for the next time;
-* `minutes?: number` - how many minutes to wait before executing the job for the next time;
-* `seconds?: number` - how many seconds to wait before executing the job for the next time;
-* `milliseconds?: number` - how many milliseconds to wait before executing the job for the next time;
+* For both sync/async, `JobOptions` has errorHandler function which takes `e: Error` parameter.
+* This is optional and if not provided (or falsy), default error handler will print the Job ID + error message to console.
+* For Async Jobs, the error handler function is appended to the function chain as a `.catch()` block at the end.
 
 
-## API for `JobSync` and `JobAsync`
+# API Documentation
 
-* `constructor(fn, t: TimerOptions, id: string, errorHandler, runAtStart: boolean )` : fn: `JobAsync` or `JobSync` instance which denotes the task. `runAtStart` represents that a job should also run immediately once it is started (or added to scheduler). Default `runAtStart = true`
+## IntervalBasedJob
 
-* `id: string` - A property to access Job ID. If not provided while creation, default value is generated by UUID.
+* `constructor(id: string, fn, intervalOptions: IntervalOptions, jobOptions: JobOptions)`
+    * `id`: Unique Job ID to be used to Query Jobs and stop/remove
+    * `fn`: Task function definition - can be sync/async function
+    * `intervalOptions`: Interval timer settings. API described below
+    * `jobOptions`: Job Settings. API described below
+
+* `id` and `status` can be accessed directly.
+* `status: JobStatus` - stores the status of the job, which can be `NOT_STARTED`, `RUNNING`, `STOPPED`. `JobStatus` enum can be used to validate status at any state.
 * `start(): void` - starts, or restarts (if it's already running) the job;
 * `stop(): void` - stops the job. Can be restarted again with `start` command
-* `JobStatus` - An Enum which can be either of: `NOT_STARTED`, `RUNNING`, `STOPPED`. This should be used for easily accessing and validating Job status
-* `status: JobStatus` - stores the status of the job
+* A Job can be started and stopped any number of times.
 
-## API for `Scheduler`
 
+## IntervalOptions
+
+* `days?: number` - how many days to wait before executing the job for the next time
+* `hours?: number` - how many hours to wait before executing the job for the next time
+* `minutes?: number` - how many minutes to wait before executing the job for the next time
+* `seconds?: number` - how many seconds to wait before executing the job for the next time
+* `milliseconds?: number` - how many milliseconds to wait before executing the job for the next time
+
+
+## XnodeScheduler
+
+* A scheduler instance can have only 1 job by a unique name.
 * `addJob(j: JobSync | JobAsync) : void` - Add Job by ID within scheduler and Start it.
 * `getJob(id: string): JobSync | JobAsync` - Get Job by ID. For invalid IDs , error is thrown
 * `startJob(id: string): void` - Start a Job by ID. For invalid IDs, error is thrown
@@ -116,8 +122,8 @@ For both JobSync and JobAsync we can provide a custom error handler function wit
 * `status()` - Returns a POJO representing various metrics related to current statuses of all jobs.
 
 
-[npm-image]: https://img.shields.io/npm/v/x-node-job-scheduler?style=plastic
-[npm-url]: https://www.npmjs.com/package/x-node-job-scheduler
-[downloads-image]: https://img.shields.io/npm/dw/x-node-job-scheduler?style=plastic
-[downloads-url]: https://www.npmjs.com/package/x-node-job-scheduler
+[npm-image]: https://img.shields.io/npm/v/xnode-scheduler?style=plastic
+[npm-url]: https://www.npmjs.com/package/xnode-scheduler
+[downloads-image]: https://img.shields.io/npm/dw/xnode-scheduler?style=plastic
+[downloads-url]: https://www.npmjs.com/package/xnode-scheduler
 
