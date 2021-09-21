@@ -1,6 +1,6 @@
 {
   "name": "xnode-scheduler",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Simple In-memory job scheduler for Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,14 +24,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dhruvv90/x-node-job-scheduler.git"
+    "url": "git+https://github.com/dhruvv90/xnode-scheduler.git"
   },
   "author": "dhruvv90",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dhruvv90/x-node-job-scheduler/issues"
+    "url": "https://github.com/dhruvv90/xnode-scheduler/issues"
   },
-  "homepage": "https://github.com/dhruvv90/x-node-job-scheduler#readme",
+  "homepage": "https://github.com/dhruvv90/xnode-scheduler#readme",
   "directories": {
     "lib": "lib",
     "test": "test"
