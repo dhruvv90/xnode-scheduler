@@ -1,6 +1,6 @@
 import { Fn, Task, TaskAsync, TaskSync } from './task';
 
-type IntervalOptions = {
+type IntervalOptions = { 
     milliseconds?: number,
     seconds?: number,
     minutes?: number,
